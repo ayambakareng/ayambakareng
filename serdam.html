@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="id" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Karyawan - Cabang Serdam</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* --- RESET & VARIABLES --- */
+        :root {
+            --brand-gradient: linear-gradient(135deg, #cc0000 0%, #ff4b4b 100%);
+            --danger: #ff4b4b; --success: #00e676; --warning: #ffaa00;
+            --bg-main: #f4f5f7; --bg-sidebar: #ffffff; --bg-card: #ffffff;
+            --border-color: #e5e7eb; --text-main: #1f2937; --text-muted: #6b7280; --input-bg: #ffffff;
+        }
+
+        [data-theme="dark"] {
+            --bg-main: #14141c; --bg-sidebar: #1a1a24; --bg-card: #1e1e2d;
+            --border-color: #2a2b3d; --text-main: #ffffff; --text-muted: #9ba0b4; --input-bg: #14141c;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+        body { display: flex; height: 100vh; background-color: var(--bg-main); color: var(--text-main); overflow: hidden; transition: 0.3s; }
+
+        /* --- LOGIN SCREEN KARYAWAN --- */
+        #login-screen {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--bg-main); z-index: 9999;
+            display: flex; justify-content: center; align-items: center; flex-direction: column;
+        }
+        .login-box {
+            background: var(--bg-card); padding: 2.5rem; border-radius: 16px;
+            border: 1px solid var(--border-color); text-align: center; max-width: 380px; width: 90%;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+        }
+        .login-box h2 { color: var(--warning); margin-bottom: 0.5rem; font-weight: 800; }
+        .login-box input { margin: 1.5rem 0; text-align: center; letter-spacing: 8px; font-size: 1.5rem; font-weight: bold; border: 2px solid var(--border-color); }
+
+        /* --- SIDEBAR & CONTENT --- */
+        .sidebar { width: 260px; background-color: var(--bg-sidebar); border-right: 1px solid var(--border-color); display: flex; flex-direction: column; padding: 2rem 1.2rem; transition: 0.3s; z-index: 100; }
+        .main-content { flex: 1; padding: 1.5rem; overflow-y: auto; display: flex; flex-direction: column; gap: 1.5rem; }
+        
+        .brand-logo h3 { color: var(--warning); text-align: center; margin-bottom: 2rem; letter-spacing: 1px; }
+        .sidebar-label { color: var(--text-muted); font-size: 0.7rem; font-weight: 700; text-transform: uppercase; margin: 1.5rem 0 0.5rem 0.5rem; }
+        .menu-item { padding: 0.8rem 1rem; border-radius: 8px; color: var(--text-muted); cursor: pointer; transition: 0.2s; display: flex; align-items: center; gap: 12px; margin-bottom: 4px; font-size: 0.9rem; }
+        .menu-item.active { background: rgba(255, 170, 0, 0.1); color: var(--warning); border-left: 4px solid var(--warning); font-weight: 600; }
+
+        .top-header { display: flex; justify-content: space-between; align-items: center; background: var(--bg-card); padding: 1rem 1.5rem; border-radius: 12px; border: 1px solid var(--border-color); }
+        .card { background-color: var(--bg-card); border-radius: 12px; padding: 1.5rem; border: 1px solid var(--border-color); }
+        
+        .input-group { display: flex; gap: 0.8rem; flex-wrap: wrap; align-items: flex-end; }
+        .input-field { display: flex; flex-direction: column; flex: 1; min-width: 140px; }
+        input, select { width: 100%; padding: 0.75rem; border-radius: 8px; border: 1px solid var(--border-color); background-color: var(--input-bg); color: var(--text-main); outline: none; }
+        
+        .btn-gradient { background: linear-gradient(135deg, #ffaa00 0%, #ff8800 100%); color: black; border: none; padding: 0.8rem 1.5rem; border-radius: 8px; font-weight: 700; cursor: pointer; transition: 0.2s; }
+        .btn-outline { background: transparent; color: var(--text-main); border: 1px solid var(--border-color); padding: 0.5rem 1rem; border-radius: 8px; cursor: pointer; display: flex; align-items: center; gap: 8px; }
+
+        table { width: 100%; border-collapse: collapse; min-width: 700px; margin-top: 1rem; }
+        th { text-align: left; padding: 1rem; color: var(--text-muted); font-size: 0.75rem; border-bottom: 2px solid var(--border-color); text-transform: uppercase; }
+        td { padding: 1rem; border-bottom: 1px solid var(--border-color); font-size: 0.9rem; }
+        .input-table { width: 75px; text-align: center; padding: 0.4rem; border-radius: 6px; background: var(--input-bg); border: 1px solid var(--border-color); color: var(--text-main); font-weight: bold;}
+        
+        @media (max-width: 768px) {
+            .sidebar { position: fixed; left: -100%; height: 100vh; }
+            .sidebar.open { left: 0; }
+            .main-content { padding: 1rem; }
+            .input-group { flex-direction: column; align-items: stretch; }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="login-screen">
+        <div class="login-box">
+            <h2>CABANG SERDAM</h2>
+            <p style="color: var(--text-muted); font-size: 0.8rem; margin-bottom: 1rem;">Login Karyawan</p>
+            <input type="password" id="pin-input" placeholder="****" maxlength="4">
+            <button class="btn-gradient" style="width: 100%;" onclick="checkLogin()">MASUK</button>
+        </div>
+    </div>
+
+    <aside class="sidebar" id="sidebar">
+        <div class="brand-logo"><h3>📍 SERDAM</h3></div>
+        
+        <div style="margin-bottom: 1rem;">
+            <label style="font-size: 0.7rem; color: var(--text-muted); font-weight: bold;">🕒 Shift Kerja</label>
+            <select id="shift-select" style="margin-top: 5px;">
+                <option value="Pagi">☀️ Shift Pagi</option>
+                <option value="Malam">🌙 Shift Malam</option>
+            </select>
+        </div>
+        
+        <div class="sidebar-label">Kategori</div>
+        <div class="menu-item active" onclick="changeCategory('Semua', this)">🏠 Semua Barang</div>
+        <div class="menu-item" onclick="changeCategory('Ayam & FNB', this)">🍗 Ayam & F&B</div>
+        <div class="menu-item" onclick="changeCategory('Packaging', this)">📦 Packaging</div>
+        <div class="menu-item" onclick="changeCategory('Kebersihan', this)">✨ Kebersihan</div>
+        
+        <div style="flex-grow: 1;"></div>
+        <button class="btn-outline" style="width: 100%; justify-content: center;" onclick="logout()">🚪 Logout</button>
+    </aside>
+
+    <main class="main-content">
+        <header class="top-header">
+            <div style="display: flex; gap: 15px; align-items: center;">
+                <button onclick="document.getElementById('sidebar').classList.toggle('open')" style="background:none; border:none; color:white; font-size:1.5rem;">☰</button>
+                <h1 style="font-size: 1.1rem;" id="page-title">Lapor Fisik</h1>
+            </div>
+            <div id="live-clock" style="font-size: 0.8rem; font-weight: 600; color: var(--warning);"></div>
+        </header>
+
+        <section class="card" style="border-left: 4px solid var(--warning);">
+            <h3>📝 Update Sisa Fisik (Ganti Shift)</h3>
+            <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 1rem;">Pilih barang dan masukkan jumlah sisa fisik aktual di toko.</p>
+            <div class="input-group">
+                <div class="input-field"><select id="select-karyawan"><option>Loading...</option></select></div>
+                <div class="input-field"><input type="number" id="qty-fisik" placeholder="Jumlah Sisa Fisik"></div>
+                <button class="btn-gradient" onclick="laporFisik()">Update Sisa</button>
+            </div>
+        </section>
+
+        <section class="card">
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+                <h2>Stok Gudang Serdam</h2>
+                <button class="btn-outline" style="color: var(--success); border-color: var(--success);" onclick="kirimWA()">📱 Kirim WA ke Owner</button>
+            </div>
+            
+            <div style="overflow-x: auto;">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Barang</th>
+                            <th style="text-align: center;">Sistem</th>
+                            <th style="text-align: center; color: var(--warning);">Fisik (Aktual)</th>
+                            <th style="text-align: center;">Selisih</th>
+                        </tr>
+                    </thead>
+                    <tbody id="inventory-list"></tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
+        import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-database.js";
+
+        // CONFIG FIREBASE MAS ARY
+        const firebaseConfig = {
+            apiKey: "AIzaSyCaH89A1-zerbNoNn4kdHLEMEkGRKcPY5Q",
+            authDomain: "ayam-bakareng-e8c3e.firebaseapp.com",
+            databaseURL: "https://ayam-bakareng-e8c3e-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "ayam-bakareng-e8c3e",
+            storageBucket: "ayam-bakareng-e8c3e.firebasestorage.app",
+            messagingSenderId: "86767748720",
+            appId: "1:86767748720:web:62ce7000429383a36156b5"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+        
+        // PENTING: MENGARAH LANGSUNG HANYA KE FOLDER CABANG SERDAM DI DATABASE
+        const CABANG = "Serdam";
+        const dbRef = ref(db, `bakareng_v2_db/${CABANG}`);
+
+        window.branchData = [];
+        window.currentCategory = 'Semua';
+
+        // SYNC DATABASE HANYA UNTUK CABANG INI
+        onValue(dbRef, (snapshot) => {
+            window.branchData = snapshot.val() || [];
+            window.renderTable();
+        });
+
+        window.saveToDB = () => set(dbRef, window.branchData);
+
+        // LOGIN KARYAWAN (Bisa dibedakan tiap cabang)
+        const PIN_KARYAWAN = "1111"; // Pin Karyawan Serdam
+        window.checkLogin = () => {
+            if(document.getElementById('pin-input').value === PIN_KARYAWAN) {
+                document.getElementById('login-screen').style.display = 'none';
+                sessionStorage.setItem(`auth_${CABANG}`, 'true');
+            } else { alert('PIN SALAH!'); }
+        };
+        if(sessionStorage.getItem(`auth_${CABANG}`) === 'true') document.getElementById('login-screen').style.display = 'none';
+        window.logout = () => { sessionStorage.removeItem(`auth_${CABANG}`); location.reload(); };
+
+        window.changeCategory = (cat, el) => {
+            window.currentCategory = cat;
+            document.querySelectorAll('.menu-item').forEach(m => m.classList.remove('active'));
+            el.classList.add('active');
+            window.renderTable();
+            if(window.innerWidth < 768) document.getElementById('sidebar').classList.remove('open');
+        };
+
+        window.laporFisik = () => {
+            const id = document.getElementById('select-karyawan').value;
+            const qty = parseInt(document.getElementById('qty-fisik').value);
+            if(!id || isNaN(qty)) return alert('Pilih barang & isi jumlah fisik!');
+            
+            const item = window.branchData.find(i => i.id == id);
+            item.stokFisik = qty;
+            document.getElementById('qty-fisik').value = '';
+            window.saveToDB();
+        };
+
+        window.updateFisikDirect = (id, val) => {
+            const item = window.branchData.find(i => i.id == id);
+            item.stokFisik = parseInt(val) || 0;
+            window.saveToDB();
+        };
+
+        window.renderTable = () => {
+            const tbody = document.getElementById('inventory-list');
+            const selKaryawan = document.getElementById('select-karyawan');
+            
+            tbody.innerHTML = '';
+            selKaryawan.innerHTML = '<option value="">-- Pilih Barang --</option>';
+            
+            let data = window.currentCategory === 'Semua' ? window.branchData : window.branchData.filter(i => i.dept === window.currentCategory);
+
+            data.forEach(item => {
+                selKaryawan.add(new Option(item.nama, item.id));
+
+                const totalSistem = (item.stokAwal + (item.stokTambahan || 0)) - (item.terjual || 0);
+                const selisih = (item.stokFisik || 0) - totalSistem;
+                const selisihClass = selisih < 0 ? 'color:var(--danger)' : (selisih > 0 ? 'color:var(--success)' : '');
+
+                tbody.innerHTML += `
+                    <tr>
+                        <td><strong>${item.nama}</strong><br><small style="color:var(--text-muted)">${item.dept}</small></td>
+                        <td style="text-align:center; font-weight:bold">${totalSistem}</td>
+                        <td style="text-align:center"><input type="number" class="input-table" value="${item.stokFisik || 0}" onchange="updateFisikDirect(${item.id}, this.value)" style="color:var(--warning)"></td>
+                        <td style="text-align:center; font-weight:bold; ${selisihClass}">${selisih > 0 ? '+' + selisih : selisih}</td>
+                    </tr>
+                `;
+            });
+        };
+
+        window.kirimWA = () => {
+            const shift = document.getElementById('shift-select').value;
+            let p = `*LAPORAN SHIFT CABANG ${CABANG.toUpperCase()}*\n🕒 Shift: ${shift}\n\n`;
+            let data = window.currentCategory === 'Semua' ? window.branchData : window.branchData.filter(i => i.dept === window.currentCategory);
+            
+            data.forEach((i, idx) => {
+                const sys = (i.stokAwal + (i.stokTambahan || 0)) - (i.terjual || 0);
+                p += `${idx+1}. *${i.nama}*\n   Sistem: ${sys} | Fisik: ${i.stokFisik || 0} | Selisih: ${(i.stokFisik || 0) - sys}\n`;
+            });
+            window.open(`https://wa.me/06285821482667?text=${encodeURIComponent(p)}`);
+        };
+
+        setInterval(() => {
+            const n = new Date();
+            document.getElementById('live-clock').innerText = n.toLocaleDateString('id-ID') + " | " + n.toLocaleTimeString('id-ID');
+        }, 1000);
+    </script>
+    <script>
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('sw.js')
+      .then(() => console.log("Service Worker Registered"));
+  }
+</script>
+<link rel="manifest" href="manifest.json">
+</body>
+</html>

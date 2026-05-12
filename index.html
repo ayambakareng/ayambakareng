@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="id" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ayam Bakareng - Multi Branch System</title>
+    
+    <link rel="manifest" href="/manifest.json">
+    <link rel="icon" type="image/png" href="/logo.png">
+    <link rel="apple-touch-icon" href="/logo.png">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* --- RESET & VARIABLES --- */
+        :root {
+            --brand-gradient: linear-gradient(135deg, #cc0000 0%, #ff4b4b 100%);
+            --danger: #ff4b4b;
+            --success: #00e676;
+            --warning: #ffaa00;
+            
+            /* Light Mode */
+            --bg-main: #f4f5f7;
+            --bg-sidebar: #ffffff;
+            --bg-card: #ffffff;
+            --border-color: #e5e7eb;
+            --text-main: #1f2937;
+            --text-muted: #6b7280;
+            --input-bg: #ffffff;
+        }
+
+        [data-theme="dark"] {
+            --bg-main: #14141c;
+            --bg-sidebar: #1a1a24;
+            --bg-card: #1e1e2d;
+            --border-color: #2a2b3d;
+            --text-main: #ffffff;
+            --text-muted: #9ba0b4;
+            --input-bg: #14141c;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+        body { display: flex; height: 100vh; background-color: var(--bg-main); color: var(--text-main); overflow: hidden; transition: 0.3s; }
+
+        /* --- LOGIN SCREEN --- */
+        #login-screen {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--bg-main); z-index: 9999;
+            display: flex; justify-content: center; align-items: center; flex-direction: column;
+        }
+        .login-box {
+            background: var(--bg-card); padding: 2.5rem; border-radius: 16px;
+            border: 1px solid var(--border-color); text-align: center; max-width: 380px; width: 90%;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+        }
+        .login-box h2 { color: var(--danger); margin-bottom: 0.5rem; font-weight: 800; }
+        .login-box input { margin: 1.5rem 0; text-align: center; letter-spacing: 8px; font-size: 1.5rem; font-weight: bold; border: 2px solid var(--border-color); }
+
+        /* --- SIDEBAR --- */
+        .sidebar { width: 280px; background-color: var(--bg-sidebar); border-right: 1px solid var(--border-color); display: flex; flex-direction: column; padding: 2rem 1.2rem; transition: 0.3s; z-index: 100; }
+        .brand-logo h2 { color: var(--danger); text-align: center; margin-bottom: 2rem; letter-spacing: 1px; }
+
+        .selector-box { background: rgba(128, 128, 128, 0.05); padding: 1rem; border-radius: 10px; border: 1px solid var(--border-color); margin-bottom: 1rem; }
+        .selector-box label { font-size: 0.7rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase; display: block; margin-bottom: 0.5rem; }
+        .selector-box select { width: 100%; padding: 0.7rem; border-radius: 8px; background: var(--input-bg); color: var(--text-main); border: 1px solid var(--border-color); font-weight: 600; cursor: pointer;}
+
+        .sidebar-label { color: var(--text-muted); font-size: 0.7rem; font-weight: 700; text-transform: uppercase; margin: 1.5rem 0 0.5rem 0.5rem; }
+        .menu-item { padding: 0.8rem 1rem; border-radius: 8px; color: var(--text-muted); cursor: pointer; transition: 0.2s; display: flex; align-items: center; gap: 12px; margin-bottom: 4px; font-size: 0.9rem; }
+        .menu-item:hover { background: rgba(128, 128, 128, 0.1); color: var(--text-main); }
+        .menu-item.active { background: rgba(204, 0, 0, 0.1); color: var(--danger); border-left: 4px solid #cc0000; font-weight: 600; }
+
+        /* --- MAIN CONTENT --- */
+        .main-content { flex: 1; padding: 2rem; overflow-y: auto; display: flex; flex-direction: column; gap: 1.5rem; }
+        .top-header { display: flex; justify-content: space-between; align-items: center; background: var(--bg-card); padding: 1.2rem 1.5rem; border-radius: 14px; border: 1px solid var(--border-color); }
+        .live-clock { font-size: 0.9rem; font-weight: 600; color: var(--warning); }
+        .menu-toggle { display: none; background: none; border: none; color: var(--text-main); font-size: 1.5rem; }
+
+        /* --- CARDS & TABLES --- */
+        .card { background-color: var(--bg-card); border-radius: 14px; padding: 1.5rem; border: 1px solid var(--border-color); }
+        .subtitle { font-size: 0.8rem; color: var(--text-muted); margin-bottom: 1rem; display: block; }
+        .input-group { display: flex; gap: 0.8rem; flex-wrap: wrap; align-items: flex-end; }
+        .input-field { display: flex; flex-direction: column; flex: 1; min-width: 140px; }
+        .input-field label { font-size: 0.7rem; color: var(--text-muted); margin-bottom: 0.4rem; font-weight: 600; }
+        
+        input, select { width: 100%; padding: 0.75rem; border-radius: 8px; border: 1px solid var(--border-color); background-color: var(--input-bg); color: var(--text-main); outline: none; }
+        .btn-gradient { background: var(--brand-gradient); color: white; border: none; padding: 0.8rem 1.5rem; border-radius: 8px; font-weight: 600; cursor: pointer; transition: 0.2s; }
+        .btn-outline { background: transparent; color: var(--text-main); border: 1px solid var(--border-color); padding: 0.5rem 1rem; border-radius: 8px; cursor: pointer; display: flex; align-items: center; gap: 8px; }
+
+        .table-responsive { overflow-x: auto; margin-top: 1rem; }
+        table { width: 100%; border-collapse: collapse; min-width: 850px; }
+        th { text-align: left; padding: 1rem; color: var(--text-muted); font-size: 0.75rem; border-bottom: 2px solid var(--border-color); text-transform: uppercase; }
+        td { padding: 1rem; border-bottom: 1px solid var(--border-color); font-size: 0.9rem; }
+        .input-table { width: 75px; text-align: center; padding: 0.4rem; border-radius: 6px; background: var(--input-bg); border: 1px solid var(--border-color); color: var(--text-main); font-weight: bold;}
+
+        /* --- MOBILE RESPONSIVE --- */
+        @media (max-width: 768px) {
+            .sidebar { position: fixed; left: -100%; height: 100vh; }
+            .sidebar.open { left: 0; }
+            .menu-toggle { display: block; }
+            .main-content { padding: 1rem; }
+            .input-group { flex-direction: column; align-items: stretch; }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="login-screen">
+        <div class="login-box">
+            <h2>AYAM BAKARENG</h2>
+            <p class="subtitle">Sistem Manajemen Inventaris Cabang</p>
+            <input type="password" id="pin-input" placeholder="****" maxlength="4">
+            <button class="btn-gradient" style="width: 100%;" onclick="checkLogin()">MASUK SISTEM</button>
+        </div>
+    </div>
+
+    <aside class="sidebar" id="sidebar">
+        <div class="brand-logo"><h2>BAKARENG</h2></div>
+        
+        <div class="selector-box">
+            <label>📍 Cabang Aktif</label>
+            <select id="branch-select" onchange="changeBranch()">
+                <option value="Suwignyo">Jalan Suwignyo</option>
+                <option value="Tani">Jalan Tani</option>
+                <option value="Serdam">Jalan Serdam</option>
+            </select>
+        </div>
+
+        <div class="selector-box">
+            <label>🕒 Shift Kerja</label>
+            <select id="shift-select">
+                <option value="Pagi">☀️ Shift Pagi</option>
+                <option value="Malam">🌙 Shift Malam</option>
+            </select>
+        </div>
+        
+        <div class="sidebar-label">Kategori</div>
+        <div class="menu-item active" onclick="changeCategory('Semua', this)">🏠 Semua Barang</div>
+        <div class="menu-item" onclick="changeCategory('Ayam & FNB', this)">🍗 Ayam & F&B</div>
+        <div class="menu-item" onclick="changeCategory('Packaging', this)">📦 Packaging</div>
+        <div class="menu-item" onclick="changeCategory('Kebersihan', this)">✨ Kebersihan</div>
+        
+        <div style="flex-grow: 1;"></div>
+        <button class="btn-outline" style="width: 100%; justify-content: center;" onclick="logout()">🚪 Logout</button>
+    </aside>
+
+    <main class="main-content">
+        <header class="top-header">
+            <div style="display: flex; gap: 15px; align-items: center;">
+                <button class="menu-toggle" onclick="toggleSidebar()">☰</button>
+                <h1 style="font-size: 1.1rem;" id="page-title">Dashboard</h1>
+            </div>
+            <div style="display: flex; gap: 15px; align-items: center;">
+                <div class="live-clock" id="live-clock"></div>
+                <button class="btn-outline" onclick="toggleTheme()">🌓</button>
+            </div>
+        </header>
+
+        <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+            <section class="card" style="flex: 1; min-width: 300px;">
+                <h3>➕ Master Barang</h3>
+                <div class="input-group" style="margin-top: 1rem;">
+                    <div class="input-field"><input type="text" id="item-name" placeholder="Nama Barang"></div>
+                    <div class="input-field">
+                        <select id="item-dept">
+                            <option value="Ayam & FNB">Ayam & FNB</option>
+                            <option value="Packaging">Packaging</option>
+                            <option value="Kebersihan">Kebersihan</option>
+                        </select>
+                    </div>
+                    <div class="input-field"><input type="number" id="stok-awal" placeholder="Awal"></div>
+                    <button class="btn-gradient" onclick="addItem()">Buat</button>
+                </div>
+            </section>
+
+            <section class="card" style="flex: 1; min-width: 300px; border-left: 4px solid var(--success);">
+                <h3>📥 Stok Masuk</h3>
+                <div class="input-group" style="margin-top: 1rem;">
+                    <div class="input-field"><select id="select-tambah-stok"><option>Pilih...</option></select></div>
+                    <div class="input-field"><input type="number" id="qty-masuk" placeholder="Jumlah"></div>
+                    <button class="btn-gradient" style="background: var(--success); color: black;" onclick="tambahStokMasuk()">+ Tambah</button>
+                </div>
+            </section>
+        </div>
+
+        <section class="card" style="border-left: 4px solid var(--warning);">
+            <h3>📝 Update Sisa Fisik (Karyawan)</h3>
+            <div class="input-group" style="margin-top: 1rem;">
+                <div class="input-field"><select id="select-karyawan"><option>Pilih...</option></select></div>
+                <div class="input-field"><input type="number" id="qty-fisik" placeholder="Jumlah Fisik"></div>
+                <button class="btn-gradient" style="background: var(--warning); color: black;" onclick="laporFisik()">Update Data</button>
+            </div>
+        </section>
+
+        <section class="card">
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+                <h2 id="table-title">Laporan Stok</h2>
+                <div style="display: flex; gap: 10px;">
+                    <button class="btn-outline" style="color: var(--success); border-color: var(--success);" onclick="kirimWA()">📱 Kirim WA</button>
+                    <button class="btn-outline" onclick="window.print()">🖨️ Cetak</button>
+                </div>
+            </div>
+            <div id="summary-stats" style="font-size: 0.8rem; color: var(--text-muted); margin: 5px 0 15px 0;">Menghubungkan ke database...</div>
+            
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Barang</th>
+                            <th style="text-align: center;">Awal</th>
+                            <th style="text-align: center; color: var(--success);">+ Masuk</th>
+                            <th style="text-align: center; color: var(--danger);">- Laku</th>
+                            <th style="text-align: center;">Sistem</th>
+                            <th style="text-align: center; color: var(--warning);">Fisik</th>
+                            <th style="text-align: center;">Selisih</th>
+                            <th style="text-align: center;">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody id="inventory-list"></tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
+        import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-database.js";
+
+        // CONFIG FIREBASE MILIK MAS ARY
+        const firebaseConfig = {
+            apiKey: "AIzaSyCaH89A1-zerbNoNn4kdHLEMEkGRKcPY5Q",
+            authDomain: "ayam-bakareng-e8c3e.firebaseapp.com",
+            databaseURL: "https://ayam-bakareng-e8c3e-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "ayam-bakareng-e8c3e",
+            storageBucket: "ayam-bakareng-e8c3e.firebasestorage.app",
+            messagingSenderId: "06285821482667",
+            appId: "1:06285821482667:web:62ce7000429383a36156b5"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+        const dbRef = ref(db, 'bakareng_v2_db');
+
+        // GLOBAL STATES
+        window.allData = { 'Suwignyo': [], 'Tani': [], 'Serdam': [] };
+        window.currentCategory = 'Semua';
+
+        // === KODE SAKTI AUTODETECT CABANG ===
+        const currentPath = window.location.pathname.toLowerCase();
+        if (currentPath.includes('serdam')) {
+            window.currentBranch = 'Serdam';
+        } else if (currentPath.includes('tani')) {
+            window.currentBranch = 'Tani';
+        } else if (currentPath.includes('suwignyo')) {
+            window.currentBranch = 'Suwignyo';
+        } else {
+            window.currentBranch = 'Suwignyo'; // Default
+        }
+        // Set menu dropdown cabang sesuai dengan link yang dibuka
+        document.getElementById('branch-select').value = window.currentBranch;
+        // =====================================
+
+        // SYNC DATABASE
+        onValue(dbRef, (snapshot) => {
+            if (snapshot.exists()) {
+                window.allData = snapshot.val();
+                if (!window.allData.Suwignyo) window.allData.Suwignyo = [];
+                if (!window.allData.Tani) window.allData.Tani = [];
+                if (!window.allData.Serdam) window.allData.Serdam = [];
+            }
+            window.renderTable();
+        });
+
+        window.saveToDB = () => set(dbRef, window.allData);
+
+        // UI LOGIC
+        const PIN_BENAR = "1234";
+        window.checkLogin = () => {
+            if(document.getElementById('pin-input').value === PIN_BENAR) {
+                document.getElementById('login-screen').style.display = 'none';
+                sessionStorage.setItem('bakareng_auth', 'true');
+            } else { alert('PIN SALAH!'); }
+        };
+        if(sessionStorage.getItem('bakareng_auth') === 'true') document.getElementById('login-screen').style.display = 'none';
+        
+        window.logout = () => { sessionStorage.removeItem('bakareng_auth'); location.reload(); };
+        window.toggleTheme = () => {
+            const theme = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', theme);
+            localStorage.setItem('bakareng_theme', theme);
+        };
+        if(localStorage.getItem('bakareng_theme')) document.documentElement.setAttribute('data-theme', localStorage.getItem('bakareng_theme'));
+        
+        window.toggleSidebar = () => document.getElementById('sidebar').classList.toggle('open');
+
+        // CRUD FUNCTIONS
+        window.changeBranch = () => {
+            window.currentBranch = document.getElementById('branch-select').value;
+            window.renderTable();
+        };
+
+        window.changeCategory = (cat, el) => {
+            window.currentCategory = cat;
+            document.querySelectorAll('.menu-item').forEach(m => m.classList.remove('active'));
+            el.classList.add('active');
+            window.renderTable();
+            if(window.innerWidth < 768) window.toggleSidebar();
+        };
+
+        window.addItem = () => {
+            const name = document.getElementById('item-name').value;
+            const dept = document.getElementById('item-dept').value;
+            const awal = parseInt(document.getElementById('stok-awal').value);
+            if(!name || isNaN(awal)) return alert('Lengkapi data!');
+
+            window.allData[window.currentBranch].push({
+                id: Date.now(), nama: name, dept: dept, stokAwal: awal,
+                stokTambahan: 0, terjual: 0, stokFisik: 0
+            });
+            document.getElementById('item-name').value = '';
+            document.getElementById('stok-awal').value = '';
+            window.saveToDB();
+        };
+
+        window.tambahStokMasuk = () => {
+            const id = document.getElementById('select-tambah-stok').value;
+            const qty = parseInt(document.getElementById('qty-masuk').value);
+            if(!id || isNaN(qty)) return alert('Pilih barang & jumlah!');
+            
+            const item = window.allData[window.currentBranch].find(i => i.id == id);
+            item.stokTambahan = (item.stokTambahan || 0) + qty;
+            document.getElementById('qty-masuk').value = '';
+            window.saveToDB();
+        };
+
+        window.laporFisik = () => {
+            const id = document.getElementById('select-karyawan').value;
+            const qty = parseInt(document.getElementById('qty-fisik').value);
+            if(!id || isNaN(qty)) return alert('Pilih barang & isi fisik!');
+            
+            const item = window.allData[window.currentBranch].find(i => i.id == id);
+            item.stokFisik = qty;
+            document.getElementById('qty-fisik').value = '';
+            window.saveToDB();
+        };
+
+        window.updateField = (id, field, val) => {
+            const item = window.allData[window.currentBranch].find(i => i.id == id);
+            item[field] = parseInt(val) || 0;
+            window.saveToDB();
+        };
+
+        window.deleteItem = (id) => {
+            if(confirm('Hapus barang ini?')) {
+                window.allData[window.currentBranch] = window.allData[window.currentBranch].filter(i => i.id != id);
+                window.saveToDB();
+            }
+        };
+
+        // RENDER TABLE
+        window.renderTable = () => {
+            const tbody = document.getElementById('inventory-list');
+            const selTambah = document.getElementById('select-tambah-stok');
+            const selKaryawan = document.getElementById('select-karyawan');
+            
+            tbody.innerHTML = '';
+            selTambah.innerHTML = '<option value="">-- Pilih Barang --</option>';
+            selKaryawan.innerHTML = '<option value="">-- Pilih Barang --</option>';
+
+            document.getElementById('page-title').innerText = `Cabang ${window.currentBranch} - ${window.currentCategory}`;
+            
+            let data = window.allData[window.currentBranch] || [];
+            if(window.currentCategory !== 'Semua') data = data.filter(i => i.dept === window.currentCategory);
+
+            data.forEach(item => {
+                const opt = new Option(item.nama, item.id);
+                selTambah.add(opt.cloneNode(true));
+                selKaryawan.add(opt);
+
+                const totalSistem = (item.stokAwal + (item.stokTambahan || 0)) - (item.terjual || 0);
+                const selisih = (item.stokFisik || 0) - totalSistem;
+                const selisihClass = selisih < 0 ? 'color:var(--danger)' : (selisih > 0 ? 'color:var(--success)' : '');
+
+                tbody.innerHTML += `
+                    <tr>
+                        <td><strong>${item.nama}</strong><br><small style="color:var(--text-muted)">${item.dept}</small></td>
+                        <td style="text-align:center">${item.stokAwal}</td>
+                        <td style="text-align:center"><input type="number" class="input-table" value="${item.stokTambahan || 0}" onchange="updateField(${item.id}, 'stokTambahan', this.value)" style="color:var(--success)"></td>
+                        <td style="text-align:center"><input type="number" class="input-table" value="${item.terjual || 0}" onchange="updateField(${item.id}, 'terjual', this.value)" style="color:var(--danger)"></td>
+                        <td style="text-align:center; font-weight:bold">${totalSistem}</td>
+                        <td style="text-align:center"><input type="number" class="input-table" value="${item.stokFisik || 0}" onchange="updateField(${item.id}, 'stokFisik', this.value)" style="color:var(--warning)"></td>
+                        <td style="text-align:center; font-weight:bold; ${selisihClass}">${selisih > 0 ? '+' + selisih : selisih}</td>
+                        <td style="text-align:center"><button style="background:none; border:none; cursor:pointer;" onclick="deleteItem(${item.id})">🗑️</button></td>
+                    </tr>
+                `;
+            });
+            document.getElementById('summary-stats').innerText = `Total: ${data.length} Item | Status: Terhubung ke Cloud`;
+        };
+
+        window.kirimWA = () => {
+            const shift = document.getElementById('shift-select').value;
+            let p = `*LAPORAN AYAM BAKARENG*\n📍 *Cabang: ${window.currentBranch}*\n🕒 Shift: ${shift}\n\n`;
+            let data = window.allData[window.currentBranch] || [];
+            if(window.currentCategory !== 'Semua') data = data.filter(i => i.dept === window.currentCategory);
+            
+            data.forEach((i, idx) => {
+                const sys = (i.stokAwal + (i.stokTambahan || 0)) - (i.terjual || 0);
+                p += `${idx+1}. *${i.nama}*\n   Fisik: ${i.stokFisik || 0} | Selisih: ${(i.stokFisik || 0) - sys}\n`;
+            });
+            window.open(`https://wa.me/06285821482667?text=${encodeURIComponent(p)}`);
+        };
+
+        // CLOCK
+        setInterval(() => {
+            const n = new Date();
+            document.getElementById('live-clock').innerText = n.toLocaleDateString('id-ID') + " | " + n.toLocaleTimeString('id-ID');
+        }, 1000);
+    </script>
+    <script>
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('sw.js')
+          .then(() => console.log("Service Worker Registered"));
+      }
+    </script>
+</body>
+</html>
