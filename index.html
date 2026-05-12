@@ -231,8 +231,8 @@
             databaseURL: "https://ayam-bakareng-e8c3e-default-rtdb.asia-southeast1.firebasedatabase.app",
             projectId: "ayam-bakareng-e8c3e",
             storageBucket: "ayam-bakareng-e8c3e.firebasestorage.app",
-            messagingSenderId: "06285821482667",
-            appId: "1:06285821482667:web:62ce7000429383a36156b5"
+            messagingSenderId: "86767748720",
+            appId: "1:86767748720:web:62ce7000429383a36156b5"
         };
 
         const app = initializeApp(firebaseConfig);
@@ -405,7 +405,7 @@
                 const sys = (i.stokAwal + (i.stokTambahan || 0)) - (i.terjual || 0);
                 p += `${idx+1}. *${i.nama}*\n   Fisik: ${i.stokFisik || 0} | Selisih: ${(i.stokFisik || 0) - sys}\n`;
             });
-            window.open(`https://wa.me/06285821482667?text=${encodeURIComponent(p)}`);
+            window.open(`https://wa.me/6285821482667?text=${encodeURIComponent(p)}`);
         };
 
         // CLOCK
