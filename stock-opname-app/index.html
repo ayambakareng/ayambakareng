@@ -4,6 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ayam Bakareng - Multi Branch System</title>
+    
+    <link rel="manifest" href="/manifest.json">
+    <link rel="icon" type="image/png" href="/logo.png">
+    <link rel="apple-touch-icon" href="/logo.png">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     
     <style>
@@ -237,8 +241,22 @@
 
         // GLOBAL STATES
         window.allData = { 'Suwignyo': [], 'Tani': [], 'Serdam': [] };
-        window.currentBranch = 'Suwignyo';
         window.currentCategory = 'Semua';
+
+        // === KODE SAKTI AUTODETECT CABANG ===
+        const currentPath = window.location.pathname.toLowerCase();
+        if (currentPath.includes('serdam')) {
+            window.currentBranch = 'Serdam';
+        } else if (currentPath.includes('tani')) {
+            window.currentBranch = 'Tani';
+        } else if (currentPath.includes('suwignyo')) {
+            window.currentBranch = 'Suwignyo';
+        } else {
+            window.currentBranch = 'Suwignyo'; // Default
+        }
+        // Set menu dropdown cabang sesuai dengan link yang dibuka
+        document.getElementById('branch-select').value = window.currentBranch;
+        // =====================================
 
         // SYNC DATABASE
         onValue(dbRef, (snapshot) => {
@@ -397,11 +415,10 @@
         }, 1000);
     </script>
     <script>
-  if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('sw.js')
-      .then(() => console.log("Service Worker Registered"));
-  }
-</script>
-<link rel="manifest" href="manifest.json">
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('sw.js')
+          .then(() => console.log("Service Worker Registered"));
+      }
+    </script>
 </body>
 </html>

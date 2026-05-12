@@ -2,18 +2,18 @@
   "name": "Ayam Bakareng Inventory",
   "short_name": "Bakareng",
   "description": "Sistem Inventaris Multi Cabang Ayam Bakareng",
-  "start_url": "/index.html",
+  "start_url": "/",
   "display": "standalone",
   "background_color": "#14141c",
   "theme_color": "#cc0000",
   "icons": [
     {
-      "src": "logo.png",
+      "src": "/logo.png",
       "sizes": "192x192",
       "type": "image/png"
     },
     {
-      "src": "logo.png",
+      "src": "/logo.png",
       "sizes": "512x512",
       "type": "image/png"
     }
