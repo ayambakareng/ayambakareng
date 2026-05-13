@@ -1,5 +1,4 @@
-// Ganti CACHE_NAME untuk memaksa browser mengupdate kodingan mewah
-const CACHE_NAME = 'bakareng-pwa-v4'; 
+const CACHE_NAME = 'bakareng-pwa-v6-network-first'; // Gembok v6 biar HP langsung sadar!
 
 const ASSETS_TO_CACHE = [
   '/',
@@ -11,16 +10,13 @@ const ASSETS_TO_CACHE = [
   '/logo.png'
 ];
 
+// 1. Install: Paksa Service Worker baru langsung aktif
 self.addEventListener('install', (e) => {
   console.log('Service Worker: Mewah Installed');
-  e.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => {
-      console.log('Service Worker: Caching Assets Mewah');
-      return cache.addAll(ASSETS_TO_CACHE);
-    }).then(() => self.skipWaiting())
-  );
+  self.skipWaiting();
 });
 
+// 2. Activate: Hancurkan semua cache masa lalu
 self.addEventListener('activate', (e) => {
   console.log('Service Worker: Mewah Activated');
   e.waitUntil(
@@ -37,11 +33,22 @@ self.addEventListener('activate', (e) => {
   );
 });
 
+// 3. Fetch: STRATEGI NETWORK FIRST (Ini perbaikan utamanya!)
 self.addEventListener('fetch', (e) => {
   e.respondWith(
-    caches.match(e.request).then((response) => {
-      // Prioritaskan ambil dari jaringan, kalau gagal baru dari cache
-      return response || fetch(e.request);
-    })
+    // Coba ambil dari internet (Vercel/GitHub) dulu
+    fetch(e.request)
+      .then((response) => {
+        // Kalau berhasil dapet dari internet, simpan/perbarui ke dalam Cache HP
+        const responseClone = response.clone();
+        caches.open(CACHE_NAME).then((cache) => {
+          cache.put(e.request, responseClone);
+        });
+        return response; // Tampilkan kodingan paling baru
+      })
+      .catch(() => {
+        // KALAU HP SEDANG OFFLINE (Tidak ada kuota/sinyal), baru panggil dari Cache
+        return caches.match(e.request);
+      })
   );
 });
