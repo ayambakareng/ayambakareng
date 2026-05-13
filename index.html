@@ -1,424 +1,180 @@
 <!DOCTYPE html>
-<html lang="id" data-theme="dark">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ayam Bakareng - Multi Branch System</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Ayam Bakareng - Owner Inventory v4</title>
     
-    <link rel="manifest" href="/manifest.json">
-    <link rel="icon" type="image/png" href="/logo.png">
-    <link rel="apple-touch-icon" href="/logo.png">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" type="image/png" href="logo.png">
+    <link rel="apple-touch-icon" href="logo.png">
+    <meta name="theme-color" content="#cc0000">
+
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;700&display=swap" rel="stylesheet">
     <style>
-        /* --- RESET & VARIABLES --- */
+        /* BASE THEME - LUXURY DEEP CHARCOAL */
         :root {
-            --brand-gradient: linear-gradient(135deg, #cc0000 0%, #ff4b4b 100%);
-            --danger: #ff4b4b;
-            --success: #00e676;
-            --warning: #ffaa00;
-            
-            /* Light Mode */
-            --bg-main: #f4f5f7;
-            --bg-sidebar: #ffffff;
-            --bg-card: #ffffff;
-            --border-color: #e5e7eb;
-            --text-main: #1f2937;
-            --text-muted: #6b7280;
-            --input-bg: #ffffff;
+            --bg-body: #101014;
+            --bg-card: #1c1c24;
+            --bg-accent: #cc0000;
+            --bg-accent-gold: #D4AF37;
+            --text-main: #e0e0e0;
+            --text-secondary: #aaaaaa;
+            --border-color: rgba(224, 224, 224, 0.1);
+            --transition-speed: 0.3s;
         }
 
-        [data-theme="dark"] {
-            --bg-main: #14141c;
-            --bg-sidebar: #1a1a24;
-            --bg-card: #1e1e2d;
-            --border-color: #2a2b3d;
-            --text-main: #ffffff;
-            --text-muted: #9ba0b4;
-            --input-bg: #14141c;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body { font-family: 'Space Grotesk', sans-serif; background: var(--bg-body); color: var(--text-main); position: relative; }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
-        body { display: flex; height: 100vh; background-color: var(--bg-main); color: var(--text-main); overflow: hidden; transition: 0.3s; }
+        /* SNOWFALL EFFECT */
+        #snow-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 100; }
 
-        /* --- LOGIN SCREEN --- */
-        #login-screen {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: var(--bg-main); z-index: 9999;
-            display: flex; justify-content: center; align-items: center; flex-direction: column;
-        }
-        .login-box {
-            background: var(--bg-card); padding: 2.5rem; border-radius: 16px;
-            border: 1px solid var(--border-color); text-align: center; max-width: 380px; width: 90%;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
-        }
-        .login-box h2 { color: var(--danger); margin-bottom: 0.5rem; font-weight: 800; }
-        .login-box input { margin: 1.5rem 0; text-align: center; letter-spacing: 8px; font-size: 1.5rem; font-weight: bold; border: 2px solid var(--border-color); }
+        /* INTERACTIVE LOGO PACK (NEW) */
+        .brand-panel { text-align: center; padding: 30px; border-bottom: 1px solid var(--border-color); display: flex; flex-direction: column; align-items: center; }
+        .logo-main { width: 110px; height: 110px; border-radius: 50%; box-shadow: 0 0 30px rgba(204, 0, 0, 0.6); margin-bottom: 15px; }
+        .brand-name { color: #fff; text-transform: uppercase; letter-spacing: 2px; font-weight: 700; font-size: 1.2rem; }
 
-        /* --- SIDEBAR --- */
-        .sidebar { width: 280px; background-color: var(--bg-sidebar); border-right: 1px solid var(--border-color); display: flex; flex-direction: column; padding: 2rem 1.2rem; transition: 0.3s; z-index: 100; }
-        .brand-logo h2 { color: var(--danger); text-align: center; margin-bottom: 2rem; letter-spacing: 1px; }
+        /* SIDENAV - LUXURY STYLE */
+        .sidenav { height: 100%; width: 0; position: fixed; z-index: 200; top: 0; left: 0; background-color: rgba(20, 20, 28, 0.98); overflow-x: hidden; transition: var(--transition-speed); padding-top: 20px; border-right: 1px solid var(--border-color); backdrop-filter: blur(10px); }
+        .sidenav a { padding: 15px 15px 15px 32px; text-decoration: none; font-size: 1.1rem; color: var(--text-secondary); display: block; transition: var(--transition-speed); display: flex; align-items: center; gap: 10px; border-radius: 8px; margin: 5px 10px; }
+        .sidenav a:hover { background-color: rgba(204, 0, 0, 0.1); color: #fff; transform: scale(1.02); }
+        .sidenav .closebtn { position: absolute; top: 10px; right: 25px; font-size: 30px; color: var(--bg-accent); }
 
-        .selector-box { background: rgba(128, 128, 128, 0.05); padding: 1rem; border-radius: 10px; border: 1px solid var(--border-color); margin-bottom: 1rem; }
-        .selector-box label { font-size: 0.7rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase; display: block; margin-bottom: 0.5rem; }
-        .selector-box select { width: 100%; padding: 0.7rem; border-radius: 8px; background: var(--input-bg); color: var(--text-main); border: 1px solid var(--border-color); font-weight: 600; cursor: pointer;}
+        /* HEADER */
+        .header { background: var(--bg-card); color: white; padding: 15px; text-align: center; border-bottom: 1px solid var(--border-color); display: flex; align-items: center; justify-content: center; position: fixed; width: 100%; top: 0; z-index: 150; box-shadow: 0 5px 15px rgba(0,0,0,0.3); }
+        .header h1 { font-size: 1rem; color: #fff; margin: 0; flex: 1; }
+        .openbtn { font-size: 24px; cursor: pointer; color: var(--bg-accent); position: absolute; left: 15px; top: 15px; transition: var(--transition-speed); }
+        .openbtn:active { transform: scale(1.2) rotate(90deg); }
 
-        .sidebar-label { color: var(--text-muted); font-size: 0.7rem; font-weight: 700; text-transform: uppercase; margin: 1.5rem 0 0.5rem 0.5rem; }
-        .menu-item { padding: 0.8rem 1rem; border-radius: 8px; color: var(--text-muted); cursor: pointer; transition: 0.2s; display: flex; align-items: center; gap: 12px; margin-bottom: 4px; font-size: 0.9rem; }
-        .menu-item:hover { background: rgba(128, 128, 128, 0.1); color: var(--text-main); }
-        .menu-item.active { background: rgba(204, 0, 0, 0.1); color: var(--danger); border-left: 4px solid #cc0000; font-weight: 600; }
-
-        /* --- MAIN CONTENT --- */
-        .main-content { flex: 1; padding: 2rem; overflow-y: auto; display: flex; flex-direction: column; gap: 1.5rem; }
-        .top-header { display: flex; justify-content: space-between; align-items: center; background: var(--bg-card); padding: 1.2rem 1.5rem; border-radius: 14px; border: 1px solid var(--border-color); }
-        .live-clock { font-size: 0.9rem; font-weight: 600; color: var(--warning); }
-        .menu-toggle { display: none; background: none; border: none; color: var(--text-main); font-size: 1.5rem; }
-
-        /* --- CARDS & TABLES --- */
-        .card { background-color: var(--bg-card); border-radius: 14px; padding: 1.5rem; border: 1px solid var(--border-color); }
-        .subtitle { font-size: 0.8rem; color: var(--text-muted); margin-bottom: 1rem; display: block; }
-        .input-group { display: flex; gap: 0.8rem; flex-wrap: wrap; align-items: flex-end; }
-        .input-field { display: flex; flex-direction: column; flex: 1; min-width: 140px; }
-        .input-field label { font-size: 0.7rem; color: var(--text-muted); margin-bottom: 0.4rem; font-weight: 600; }
+        /* DASHBOARD CARDS & ANIMATION */
+        .main { margin-top: 80px; padding: 15px; margin-left: 0; transition: margin-left .5s; position: relative; z-index: 5; }
+        .cards { display: flex; flex-wrap: wrap; gap: 15px; margin-bottom: 20px; }
+        .card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 15px; padding: 20px; text-align: center; width: 100%; transition: var(--transition-speed); position: relative; overflow: hidden; }
         
-        input, select { width: 100%; padding: 0.75rem; border-radius: 8px; border: 1px solid var(--border-color); background-color: var(--input-bg); color: var(--text-main); outline: none; }
-        .btn-gradient { background: var(--brand-gradient); color: white; border: none; padding: 0.8rem 1.5rem; border-radius: 8px; font-weight: 600; cursor: pointer; transition: 0.2s; }
-        .btn-outline { background: transparent; color: var(--text-main); border: 1px solid var(--border-color); padding: 0.5rem 1rem; border-radius: 8px; cursor: pointer; display: flex; align-items: center; gap: 8px; }
+        /* HOVER INTERACTIVE ANIMATION */
+        .card:hover { transform: scale(1.02); border-color: var(--bg-accent-gold); box-shadow: 0 5px 25px rgba(212, 175, 55, 0.2); }
+        .card:active { transform: scale(0.98); }
 
-        .table-responsive { overflow-x: auto; margin-top: 1rem; }
-        table { width: 100%; border-collapse: collapse; min-width: 850px; }
-        th { text-align: left; padding: 1rem; color: var(--text-muted); font-size: 0.75rem; border-bottom: 2px solid var(--border-color); text-transform: uppercase; }
-        td { padding: 1rem; border-bottom: 1px solid var(--border-color); font-size: 0.9rem; }
-        .input-table { width: 75px; text-align: center; padding: 0.4rem; border-radius: 6px; background: var(--input-bg); border: 1px solid var(--border-color); color: var(--text-main); font-weight: bold;}
+        .card h2 { font-size: 1rem; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; }
+        .card span { font-size: 2.2rem; font-weight: 700; color: #fff; text-shadow: 0 0 10px rgba(255,255,255,0.4); }
+        .card.main-val span { color: #fff; }
+        .card.active span { color: var(--bg-accent); text-shadow: 0 0 15px rgba(204, 0, 0, 0.8); }
 
-        /* --- MOBILE RESPONSIVE --- */
-        @media (max-width: 768px) {
-            .sidebar { position: fixed; left: -100%; height: 100vh; }
-            .sidebar.open { left: 0; }
-            .menu-toggle { display: block; }
-            .main-content { padding: 1rem; }
-            .input-group { flex-direction: column; align-items: stretch; }
-        }
+        /* BRANCH PANELS */
+        .panels-cabang { display: flex; flex-wrap: wrap; gap: 15px; }
+        .panel { flex: 1; min-width: 100%; background: var(--bg-card); border-radius: 15px; padding: 15px; border: 1px solid var(--border-color); position: relative; transition: var(--transition-speed); }
+        
+        /* INTERACTIVE PANEL HOVER */
+        .panel:hover { border-color: rgba(204, 0, 0, 0.5); transform: scale(1.01); box-shadow: 0 5px 20px rgba(204, 0, 0, 0.1); }
+        
+        .panel-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); padding-bottom: 10px; margin-bottom: 10px; }
+        .panel-header h2 { font-size: 1.1rem; color: #fff; text-transform: uppercase; font-weight: 700; }
+        .card.stock span { color: var(--bg-accent); }
+
+        /* LIST & CHIP */
+        .data-list { list-style: none; }
+        .data-list li { border-bottom: 1px solid var(--border-color); padding: 12px 0; font-size: 0.95rem; color: var(--text-main); display: flex; justify-content: space-between; align-items: center; transition: var(--transition-speed); border-radius: 8px; }
+        
+        /* HOVER INTERACTIVE LIST */
+        .data-list li:hover { background-color: rgba(224, 224, 224, 0.03); transform: scale(1.02); }
+
+        .item-val { display: flex; align-items: center; gap: 10px; font-weight: 700; }
+        .chip { padding: 4px 10px; border-radius: 12px; font-size: 0.75rem; text-transform: uppercase; font-weight: bold; position: relative; overflow: hidden; }
+        
+        .chip::after { content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 100%; background: linear-gradient(90deg, rgba(255,255,255,0.1), rgba(255,255,255,0.2), rgba(255,255,255,0.1)); animation: shimmy 3s infinite; }
+        
+        .chip.masuk { background-color: rgba(0, 150, 0, 0.2); color: #00ff00; border: 1px solid rgba(0, 255, 0, 0.3); }
+        .chip.keluar { background-color: rgba(204, 0, 0, 0.2); color: #ff0000; border: 1px solid rgba(255, 0, 0, 0.3); }
+
+        /* BUTTONS */
+        .btn-update { background-color: var(--bg-accent); color: white; border: none; padding: 12px 20px; border-radius: 12px; font-weight: 700; cursor: pointer; transition: var(--transition-speed); text-transform: uppercase; letter-spacing: 1px; font-size: 0.85rem; width: 100%; margin-bottom: 20px; }
+        
+        /* INTERACTIVE BUTTON HOVER */
+        .btn-update:hover { background-color: #ff0000; transform: scale(1.02) translateY(-2px); box-shadow: 0 5px 20px rgba(204, 0, 0, 0.5); }
+        .btn-update:active { transform: scale(0.98); }
+
+        @media (min-width: 600px) { .card { width: calc(33.33% - 10px); } .panel { min-width: calc(33.33% - 10px); } }
+        @media (min-width: 900px) { .main { margin-left: 280px; } .sidenav { width: 280px; left: 0; } .openbtn { display: none; } }
+
+        @keyframes shimmy { 100% { left: 100%; } }
     </style>
 </head>
 <body>
+    
+    <canvas id="snow-canvas"></canvas>
 
-    <div id="login-screen">
-        <div class="login-box">
-            <h2>AYAM BAKARENG</h2>
-            <p class="subtitle">Sistem Manajemen Inventaris Cabang</p>
-            <input type="password" id="pin-input" placeholder="****" maxlength="4">
-            <button class="btn-gradient" style="width: 100%;" onclick="checkLogin()">MASUK SISTEM</button>
+    <div class="header">
+        <span class="openbtn" onclick="toggleNav()">☰</span>
+        <h1>AYAM BAKARENG - Owner v4</h1>
+    </div>
+
+    <div id="mySidenav" class="sidenav">
+        <div class="brand-panel">
+            <img src="logo.png" alt="Ayam Bakareng Logo" class="logo-main">
+            <div class="brand-name">BAKARENG</div>
+        </div>
+        <a href="javascript:void(0)" class="closebtn" onclick="toggleNav()">×</a>
+        <a href="#serdam" onclick="toggleNav()"><span style="color: var(--bg-accent-gold);">⚡</span> Cabang Serdam</a>
+        <a href="#suwignyo" onclick="toggleNav()"><span style="color: var(--bg-accent-gold);">⚡</span> Cabang Suwignyo</a>
+        <a href="#tani" onclick="toggleNav()"><span style="color: var(--bg-accent-gold);">⚡</span> Cabang Tani</a>
+    </div>
+
+    <div class="main" id="main-content">
+        <button class="btn-update" onclick="loadAllData()">⚡ Sync Seluruh Data</button>
+        
+        <div class="cards">
+            <div class="card active stock"><h2>Current Stock</h2><span id="allStock">--</span></div>
+            <div class="card main-val"><h2>In (This Week)</h2><span id="allIn">--</span></div>
+            <div class="card main-val"><h2>Out (This Week)</h2><span id="allOut">--</span></div>
+        </div>
+
+        <div class="panels-cabang">
+            <div class="panel" id="serdam"><div class="panel-header"><h2>Cabang Serdam</h2><div class="card stock active"><span></span> <span id="serdamCurrentStock">--</span></div></div><ul class="data-list" id="serdamList"><li>Loading...</li></ul></div>
+            <div class="panel" id="suwignyo"><div class="panel-header"><h2>Cabang Suwignyo</h2><div class="card stock active"><span></span> <span id="suwignyoCurrentStock">--</span></div></div><ul class="data-list" id="suwignyoList"><li>Loading...</li></ul></div>
+            <div class="panel" id="tani"><div class="panel-header"><h2>Cabang Tani</h2><div class="card stock active"><span></span> <span id="taniCurrentStock">--</span></div></div><ul class="data-list" id="taniList"><li>Loading...</li></ul></div>
         </div>
     </div>
 
-    <aside class="sidebar" id="sidebar">
-        <div class="brand-logo"><h2>BAKARENG</h2></div>
-        
-        <div class="selector-box">
-            <label>📍 Cabang Aktif</label>
-            <select id="branch-select" onchange="changeBranch()">
-                <option value="Suwignyo">Jalan Suwignyo</option>
-                <option value="Tani">Jalan Tani</option>
-                <option value="Serdam">Jalan Serdam</option>
-            </select>
-        </div>
-
-        <div class="selector-box">
-            <label>🕒 Shift Kerja</label>
-            <select id="shift-select">
-                <option value="Pagi">☀️ Shift Pagi</option>
-                <option value="Malam">🌙 Shift Malam</option>
-            </select>
-        </div>
-        
-        <div class="sidebar-label">Kategori</div>
-        <div class="menu-item active" onclick="changeCategory('Semua', this)">🏠 Semua Barang</div>
-        <div class="menu-item" onclick="changeCategory('Ayam & FNB', this)">🍗 Ayam & F&B</div>
-        <div class="menu-item" onclick="changeCategory('Packaging', this)">📦 Packaging</div>
-        <div class="menu-item" onclick="changeCategory('Kebersihan', this)">✨ Kebersihan</div>
-        
-        <div style="flex-grow: 1;"></div>
-        <button class="btn-outline" style="width: 100%; justify-content: center;" onclick="logout()">🚪 Logout</button>
-    </aside>
-
-    <main class="main-content">
-        <header class="top-header">
-            <div style="display: flex; gap: 15px; align-items: center;">
-                <button class="menu-toggle" onclick="toggleSidebar()">☰</button>
-                <h1 style="font-size: 1.1rem;" id="page-title">Dashboard</h1>
-            </div>
-            <div style="display: flex; gap: 15px; align-items: center;">
-                <div class="live-clock" id="live-clock"></div>
-                <button class="btn-outline" onclick="toggleTheme()">🌓</button>
-            </div>
-        </header>
-
-        <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
-            <section class="card" style="flex: 1; min-width: 300px;">
-                <h3>➕ Master Barang</h3>
-                <div class="input-group" style="margin-top: 1rem;">
-                    <div class="input-field"><input type="text" id="item-name" placeholder="Nama Barang"></div>
-                    <div class="input-field">
-                        <select id="item-dept">
-                            <option value="Ayam & FNB">Ayam & FNB</option>
-                            <option value="Packaging">Packaging</option>
-                            <option value="Kebersihan">Kebersihan</option>
-                        </select>
-                    </div>
-                    <div class="input-field"><input type="number" id="stok-awal" placeholder="Awal"></div>
-                    <button class="btn-gradient" onclick="addItem()">Buat</button>
-                </div>
-            </section>
-
-            <section class="card" style="flex: 1; min-width: 300px; border-left: 4px solid var(--success);">
-                <h3>📥 Stok Masuk</h3>
-                <div class="input-group" style="margin-top: 1rem;">
-                    <div class="input-field"><select id="select-tambah-stok"><option>Pilih...</option></select></div>
-                    <div class="input-field"><input type="number" id="qty-masuk" placeholder="Jumlah"></div>
-                    <button class="btn-gradient" style="background: var(--success); color: black;" onclick="tambahStokMasuk()">+ Tambah</button>
-                </div>
-            </section>
-        </div>
-
-        <section class="card" style="border-left: 4px solid var(--warning);">
-            <h3>📝 Update Sisa Fisik (Karyawan)</h3>
-            <div class="input-group" style="margin-top: 1rem;">
-                <div class="input-field"><select id="select-karyawan"><option>Pilih...</option></select></div>
-                <div class="input-field"><input type="number" id="qty-fisik" placeholder="Jumlah Fisik"></div>
-                <button class="btn-gradient" style="background: var(--warning); color: black;" onclick="laporFisik()">Update Data</button>
-            </div>
-        </section>
-
-        <section class="card">
-            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
-                <h2 id="table-title">Laporan Stok</h2>
-                <div style="display: flex; gap: 10px;">
-                    <button class="btn-outline" style="color: var(--success); border-color: var(--success);" onclick="kirimWA()">📱 Kirim WA</button>
-                    <button class="btn-outline" onclick="window.print()">🖨️ Cetak</button>
-                </div>
-            </div>
-            <div id="summary-stats" style="font-size: 0.8rem; color: var(--text-muted); margin: 5px 0 15px 0;">Menghubungkan ke database...</div>
-            
-            <div class="table-responsive">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Barang</th>
-                            <th style="text-align: center;">Awal</th>
-                            <th style="text-align: center; color: var(--success);">+ Masuk</th>
-                            <th style="text-align: center; color: var(--danger);">- Laku</th>
-                            <th style="text-align: center;">Sistem</th>
-                            <th style="text-align: center; color: var(--warning);">Fisik</th>
-                            <th style="text-align: center;">Selisih</th>
-                            <th style="text-align: center;">Aksi</th>
-                        </tr>
-                    </thead>
-                    <tbody id="inventory-list"></tbody>
-                </table>
-            </div>
-        </section>
-    </main>
-
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
-        import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-database.js";
-
-        // CONFIG FIREBASE MILIK MAS ARY
-        const firebaseConfig = {
-            apiKey: "AIzaSyCaH89A1-zerbNoNn4kdHLEMEkGRKcPY5Q",
-            authDomain: "ayam-bakareng-e8c3e.firebaseapp.com",
-            databaseURL: "https://ayam-bakareng-e8c3e-default-rtdb.asia-southeast1.firebasedatabase.app",
-            projectId: "ayam-bakareng-e8c3e",
-            storageBucket: "ayam-bakareng-e8c3e.firebasestorage.app",
-            messagingSenderId: "86767748720",
-            appId: "1:86767748720:web:62ce7000429383a36156b5"
-        };
-
-        const app = initializeApp(firebaseConfig);
-        const db = getDatabase(app);
-        const dbRef = ref(db, 'bakareng_v2_db');
-
-        // GLOBAL STATES
-        window.allData = { 'Suwignyo': [], 'Tani': [], 'Serdam': [] };
-        window.currentCategory = 'Semua';
-
-        // === KODE SAKTI AUTODETECT CABANG ===
-        const currentPath = window.location.pathname.toLowerCase();
-        if (currentPath.includes('serdam')) {
-            window.currentBranch = 'Serdam';
-        } else if (currentPath.includes('tani')) {
-            window.currentBranch = 'Tani';
-        } else if (currentPath.includes('suwignyo')) {
-            window.currentBranch = 'Suwignyo';
-        } else {
-            window.currentBranch = 'Suwignyo'; // Default
-        }
-        // Set menu dropdown cabang sesuai dengan link yang dibuka
-        document.getElementById('branch-select').value = window.currentBranch;
-        // =====================================
-
-        // SYNC DATABASE
-        onValue(dbRef, (snapshot) => {
-            if (snapshot.exists()) {
-                window.allData = snapshot.val();
-                if (!window.allData.Suwignyo) window.allData.Suwignyo = [];
-                if (!window.allData.Tani) window.allData.Tani = [];
-                if (!window.allData.Serdam) window.allData.Serdam = [];
-            }
-            window.renderTable();
-        });
-
-        window.saveToDB = () => set(dbRef, window.allData);
-
-        // UI LOGIC
-        const PIN_BENAR = "1234";
-        window.checkLogin = () => {
-            if(document.getElementById('pin-input').value === PIN_BENAR) {
-                document.getElementById('login-screen').style.display = 'none';
-                sessionStorage.setItem('bakareng_auth', 'true');
-            } else { alert('PIN SALAH!'); }
-        };
-        if(sessionStorage.getItem('bakareng_auth') === 'true') document.getElementById('login-screen').style.display = 'none';
-        
-        window.logout = () => { sessionStorage.removeItem('bakareng_auth'); location.reload(); };
-        window.toggleTheme = () => {
-            const theme = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
-            document.documentElement.setAttribute('data-theme', theme);
-            localStorage.setItem('bakareng_theme', theme);
-        };
-        if(localStorage.getItem('bakareng_theme')) document.documentElement.setAttribute('data-theme', localStorage.getItem('bakareng_theme'));
-        
-        window.toggleSidebar = () => document.getElementById('sidebar').classList.toggle('open');
-
-        // CRUD FUNCTIONS
-        window.changeBranch = () => {
-            window.currentBranch = document.getElementById('branch-select').value;
-            window.renderTable();
-        };
-
-        window.changeCategory = (cat, el) => {
-            window.currentCategory = cat;
-            document.querySelectorAll('.menu-item').forEach(m => m.classList.remove('active'));
-            el.classList.add('active');
-            window.renderTable();
-            if(window.innerWidth < 768) window.toggleSidebar();
-        };
-
-        window.addItem = () => {
-            const name = document.getElementById('item-name').value;
-            const dept = document.getElementById('item-dept').value;
-            const awal = parseInt(document.getElementById('stok-awal').value);
-            if(!name || isNaN(awal)) return alert('Lengkapi data!');
-
-            window.allData[window.currentBranch].push({
-                id: Date.now(), nama: name, dept: dept, stokAwal: awal,
-                stokTambahan: 0, terjual: 0, stokFisik: 0
-            });
-            document.getElementById('item-name').value = '';
-            document.getElementById('stok-awal').value = '';
-            window.saveToDB();
-        };
-
-        window.tambahStokMasuk = () => {
-            const id = document.getElementById('select-tambah-stok').value;
-            const qty = parseInt(document.getElementById('qty-masuk').value);
-            if(!id || isNaN(qty)) return alert('Pilih barang & jumlah!');
-            
-            const item = window.allData[window.currentBranch].find(i => i.id == id);
-            item.stokTambahan = (item.stokTambahan || 0) + qty;
-            document.getElementById('qty-masuk').value = '';
-            window.saveToDB();
-        };
-
-        window.laporFisik = () => {
-            const id = document.getElementById('select-karyawan').value;
-            const qty = parseInt(document.getElementById('qty-fisik').value);
-            if(!id || isNaN(qty)) return alert('Pilih barang & isi fisik!');
-            
-            const item = window.allData[window.currentBranch].find(i => i.id == id);
-            item.stokFisik = qty;
-            document.getElementById('qty-fisik').value = '';
-            window.saveToDB();
-        };
-
-        window.updateField = (id, field, val) => {
-            const item = window.allData[window.currentBranch].find(i => i.id == id);
-            item[field] = parseInt(val) || 0;
-            window.saveToDB();
-        };
-
-        window.deleteItem = (id) => {
-            if(confirm('Hapus barang ini?')) {
-                window.allData[window.currentBranch] = window.allData[window.currentBranch].filter(i => i.id != id);
-                window.saveToDB();
-            }
-        };
-
-        // RENDER TABLE
-        window.renderTable = () => {
-            const tbody = document.getElementById('inventory-list');
-            const selTambah = document.getElementById('select-tambah-stok');
-            const selKaryawan = document.getElementById('select-karyawan');
-            
-            tbody.innerHTML = '';
-            selTambah.innerHTML = '<option value="">-- Pilih Barang --</option>';
-            selKaryawan.innerHTML = '<option value="">-- Pilih Barang --</option>';
-
-            document.getElementById('page-title').innerText = `Cabang ${window.currentBranch} - ${window.currentCategory}`;
-            
-            let data = window.allData[window.currentBranch] || [];
-            if(window.currentCategory !== 'Semua') data = data.filter(i => i.dept === window.currentCategory);
-
-            data.forEach(item => {
-                const opt = new Option(item.nama, item.id);
-                selTambah.add(opt.cloneNode(true));
-                selKaryawan.add(opt);
-
-                const totalSistem = (item.stokAwal + (item.stokTambahan || 0)) - (item.terjual || 0);
-                const selisih = (item.stokFisik || 0) - totalSistem;
-                const selisihClass = selisih < 0 ? 'color:var(--danger)' : (selisih > 0 ? 'color:var(--success)' : '');
-
-                tbody.innerHTML += `
-                    <tr>
-                        <td><strong>${item.nama}</strong><br><small style="color:var(--text-muted)">${item.dept}</small></td>
-                        <td style="text-align:center">${item.stokAwal}</td>
-                        <td style="text-align:center"><input type="number" class="input-table" value="${item.stokTambahan || 0}" onchange="updateField(${item.id}, 'stokTambahan', this.value)" style="color:var(--success)"></td>
-                        <td style="text-align:center"><input type="number" class="input-table" value="${item.terjual || 0}" onchange="updateField(${item.id}, 'terjual', this.value)" style="color:var(--danger)"></td>
-                        <td style="text-align:center; font-weight:bold">${totalSistem}</td>
-                        <td style="text-align:center"><input type="number" class="input-table" value="${item.stokFisik || 0}" onchange="updateField(${item.id}, 'stokFisik', this.value)" style="color:var(--warning)"></td>
-                        <td style="text-align:center; font-weight:bold; ${selisihClass}">${selisih > 0 ? '+' + selisih : selisih}</td>
-                        <td style="text-align:center"><button style="background:none; border:none; cursor:pointer;" onclick="deleteItem(${item.id})">🗑️</button></td>
-                    </tr>
-                `;
-            });
-            document.getElementById('summary-stats').innerText = `Total: ${data.length} Item | Status: Terhubung ke Cloud`;
-        };
-
-        window.kirimWA = () => {
-            const shift = document.getElementById('shift-select').value;
-            let p = `*LAPORAN AYAM BAKARENG*\n📍 *Cabang: ${window.currentBranch}*\n🕒 Shift: ${shift}\n\n`;
-            let data = window.allData[window.currentBranch] || [];
-            if(window.currentCategory !== 'Semua') data = data.filter(i => i.dept === window.currentCategory);
-            
-            data.forEach((i, idx) => {
-                const sys = (i.stokAwal + (i.stokTambahan || 0)) - (i.terjual || 0);
-                p += `${idx+1}. *${i.nama}*\n   Fisik: ${i.stokFisik || 0} | Selisih: ${(i.stokFisik || 0) - sys}\n`;
-            });
-            window.open(`https://wa.me/6285821482667?text=${encodeURIComponent(p)}`);
-        };
-
-        // CLOCK
-        setInterval(() => {
-            const n = new Date();
-            document.getElementById('live-clock').innerText = n.toLocaleDateString('id-ID') + " | " + n.toLocaleTimeString('id-ID');
-        }, 1000);
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+    <script>
+        // KODE SAKTI SINKRONISASI PEMILIH CABANG v4
+        const s=["/serdam.html","/suwignyo.html","/tani.html"],
+        l=JSON.parse(localStorage.getItem('brc'))||[];
+        const u=location.pathname.replace('index.html','');
+        if(s.includes(u)&&!l.includes(u)){let r=prompt('KODE SAKTI CABANG:');if(r==='BAKARENGOK'){l.push(u);localStorage.setItem('brc',JSON.stringify(l));}else{alert('SALAH KODE! Kembali ke Owner.');location.href='index.html';}}
     </script>
     <script>
-      if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.register('sw.js')
-          .then(() => console.log("Service Worker Registered"));
-      }
+        // FIREBASE CONFIG - TETAP SAMA DAN AMAN
+        const firebaseConfig = { apiKey: "AIzaSyCaH89A1-zerbNoNn4kdHLEMEkGRKcPY5Q", authDomain: "ayam-bakareng-e8c3e.firebaseapp.com", databaseURL: "https://ayam-bakareng-e8c3e-default-rtdb.asia-southeast1.firebasedatabase.app", projectId: "ayam-bakareng-e8c3e", storageBucket: "ayam-bakareng-e8c3e.firebasestorage.app", messagingSenderId: "86767748720", appId: "1:86767748720:web:62ce7000429383a36156b5" };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+
+        function toggleNav() { const nav = document.getElementById("mySidenav"); const main = document.getElementById("main-content"); if (nav.style.width === "280px" || (window.innerWidth >= 900 && nav.style.width === "")) { nav.style.width = "0"; main.style.marginLeft = "0"; } else { nav.style.width = "280px"; if (window.innerWidth >= 900) main.style.marginLeft = "280px"; } }
+        if (window.innerWidth >= 900) toggleNav();
+
+        function createListItem(item, type, quantity) { const displayQty = `${item[type].toString().padStart(2,'0')}/${quantity.toString().padStart(2,'0')}`; const time = new Date(item.waktu).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }); return `<li><div><strong>Ayam</strong></div><div class="item-val"><span class="chip ${type === 'masuk' ? 'masuk' : 'keluar'}">${displayQty} ${type}</span> ${time}</div></li>`; }
+        function calculateWeeklyData(dataList) { const now = new Date(); const oneWeekAgo = now.getTime() - (7 * 24 * 60 * 60 * 1000); return dataList.filter(item => new Date(item.waktu).getTime() > oneWeekAgo); }
+        async function loadBranchData(branchName, listId, stockId) { db.ref(branchName).once('value', snapshot => { const listElement = document.getElementById(listId); listElement.innerHTML = ''; let currentStock = 0; let rawData = []; snapshot.forEach(item => { const data = item.val(); if(data.tipe && data.jumlah !== undefined) { currentStock += (data.tipe === 'masuk' ? parseInt(data.jumlah) : -parseInt(data.jumlah)); rawData.push(data); } }); rawData.sort((a,b)=> new Date(b.waktu) - new Date(a.waktu)); const latestData = rawData.slice(0, 5); if(latestData.length === 0) { listElement.innerHTML = '<li>Belum ada data terbaru</li>'; } else { latestData.forEach(item => { let tempStock = currentStock; listElement.innerHTML += createListItem(item, item.tipe, tempStock); if(item.tipe === 'masuk') tempStock -= parseInt(item.jumlah); else tempStock += parseInt(item.jumlah); }); } document.getElementById(stockId).innerText = `${currentStock.toString().padStart(2,'0')} kg`; }); }
+        async function loadAllData() { loadBranchData('Serdam', 'serdamList', 'serdamCurrentStock'); loadBranchData('Suwignyo', 'suwignyoList', 'suwignyoCurrentStock'); loadBranchData('Tani', 'taniList', 'taniCurrentStock'); }
+        loadAllData(); setInterval(loadAllData, 60000);
+
+        // SNOWFALL JAVASCRIPT (NEW EFFECT)
+        (function() {
+            const canvas = document.getElementById('snow-canvas');
+            const ctx = canvas.getContext('2d');
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            const flakes = [];
+            function Snowflake() { this.x = Math.random() * canvas.width; this.y = Math.random() * canvas.height; this.size = Math.random() * 2.5 + 0.5; this.speed = Math.random() * 1.5 + 0.5; this.opacity = Math.random() * 0.5 + 0.3; }
+            Snowflake.prototype.update = function() { this.y += this.speed; if (this.y > canvas.height) { this.y = -this.size; this.x = Math.random() * canvas.width; } }
+            Snowflake.prototype.draw = function() { ctx.fillStyle = `rgba(255, 255, 255, ${this.opacity})`; ctx.beginPath(); ctx.arc(this.x, this.y, this.size, 0, Math.random() * Math.PI * 2); ctx.fill(); }
+            for (let i = 0; i < 70; i++) { flakes.push(new Snowflake()); }
+            function animateSnow() { ctx.clearRect(0, 0, canvas.width, canvas.height); flakes.forEach(flake => { flake.update(); flake.draw(); }); requestAnimationFrame(animateSnow); }
+            animateSnow();
+            window.addEventListener('resize', function() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; });
+        })();
     </script>
 </body>
 </html>
